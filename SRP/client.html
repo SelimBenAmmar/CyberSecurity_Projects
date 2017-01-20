@@ -1,0 +1,130 @@
+<html>
+
+    <head>
+
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="client.css">
+        <script src="node_modules/jsrp/jsrp-browser.js"></script>
+
+        <title>Connexion</title>
+
+        <script>
+
+        function envoi() 
+        {
+          // Création et initialisation de XML Request and the client object
+          var xhr = new XMLHttpRequest();
+          var xhr2 = new XMLHttpRequest();
+          var xhr3 = new XMLHttpRequest();
+
+          var client = new jsrp.client();
+
+
+          // We connect with the server with the POST method to the url mentioned above. true = We use asynchronous communication 
+          xhr.open("POST", "http://localhost:8080/api/login", true);
+          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          user = document.getElementById('username').value ;
+          pass = document.getElementById('password').value ;
+          xhr.send("username=" + user);
+          // We get back to salt sent and stored from the server
+
+          xhr.onreadystatechange = function() {
+          	// The condition is true when the response is ready
+    		if (this.readyState == 4 && this.status == 200) {
+     			salt = xhr.responseText;
+          		console.log(salt);
+    		}
+    	  }
+          
+          
+            /*  The password = private key = 'alex'
+                The verifier is a public key extracted from the private key (password) and it is kept secret by the server. 
+                The server has a database of verifers but it doesn't store the passwords. Thus, compromising the database isn't a catastrophe 
+            */
+
+          xhr2.open("POST", "http://localhost:8080/api/login2", true);
+          xhr2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            // Initialise the client object and create the verifier
+          client.init({ username: user , password: pass }, function () {
+              	/* client.createverifier will generate the salt and the verifier from the client side based on the password and the username
+                client.createVerifier(function(err, result) {
+                      s = result.salt;
+                      v = result.verifier;
+                      // Send to the server the salt and the verifier
+                      xhr2.send("salt=" + s + "&verifier=" + v);
+                      });
+                */
+
+                // The Client generates and sends to the server his ephemeral public key A based on a random private key a
+                // He also sets his salt with the one the server sends back
+                client.setSalt(salt);
+				cPubKey = client.getPublicKey();
+				xhr2.send ("cPubKey=" + cPubKey );            
+          });
+
+          xhr2.onreadystatechange = function() {
+          	// The condition is true when the response is ready
+    		if (this.readyState == 4 && this.status == 200) {
+    			sPubKey = xhr2.responseText;
+          		console.log(sPubKey);
+          		client.setServerPublicKey(sPubKey);
+    		}
+    	  }
+
+
+    	  /* After exchanging public keys. The last step is to check if both the client and the server have the same proof: exchanging M1 and M2. 
+    	  */
+
+          xhr3.open("POST", "http://localhost:8080/api/login3", true);
+          xhr3.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          // The client computes the shared key S
+          S = client.getSharedKey();
+          // The client computes M1, the value that will be send to the server
+          M1 = client.getProof();
+          xhr3.send("M1=" + M1);
+
+
+          	xhr3.onreadystatechange = function() {
+          	// The condition is true when the response is ready
+    			if (this.readyState == 4 && this.status == 200) {
+    			// Get the server's proof and compares it. The aim is to check if this is the right server.
+         		 M2 = xh3.responseText; 
+         		 // b is a boolean. If the server is the right one, b = true. If it is not, b = false
+         		 b = client.checkServerProof(M2);
+        		  if (b == true)
+          			console.log ("Welcome to the right server. You are finally connected.");
+         		 else 
+        			throw ("You are not allowed to connect. Your proof is false.");
+    			}
+    	 	}
+
+
+
+        }
+
+        </script>
+
+    </head>
+    
+    <body>
+    
+<div class="login-page">
+  <div class="form" id="submit">
+
+  	<!-- Pour lancer  la fonction intra js onsubmit="affiche()" mais pour lancer le serveur : method="post" et action="../server.js" -->
+    <form class="login-form" action="" name="formulaire" onsubmit="envoi()">
+
+      <input type="text" placeholder="username" id ="username" name="username" required />
+      <input type="password" placeholder="password" id="password" name="password" required />
+
+      <input type="submit" id="submit" value = "connexion"/>
+      
+    </form>
+
+  </div>
+</div>
+
+
+</body>
+
+</html>
