@@ -25,5 +25,3 @@ To understand the theory of the protocol
 
 This paper contains a great variety of possible attacks on WIFI : DofS, cracking passwords (WEP,WPA,WPA2,WPS), deauthentication, disassociation... 
 
-
-
