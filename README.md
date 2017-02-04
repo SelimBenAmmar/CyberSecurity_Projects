@@ -9,6 +9,13 @@ The database contains only a username and an associated password
 user = 'selim'
 pass = 'alex'
 
+The password isn't stored in neither client side nor server side. However, a verifier is stored in the server.js file.
+
+Problems to work on :
+- The program works only in Chrome.
+- Rewrite the url to delete the user and the password from it.
+
+
 Sources :
 
 To have the node module of SRP
