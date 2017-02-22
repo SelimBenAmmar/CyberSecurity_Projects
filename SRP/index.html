@@ -1,0 +1,39 @@
+<html>
+
+    <head>
+
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="projet/client.css">
+        <!-- For jsrp module -->
+        <script src="projet/node_modules/jsrp/jsrp-browser.js"></script>
+        <!-- For the client connexion script -->
+        <script src="projet/client.js"></script>
+
+        <title>Connexion</title>
+
+    </head>
+    
+    <body>
+    
+<div class="login-page">
+  <div class="form" id="submit">
+
+  	<!-- Pour lancer  la fonction intra js onsubmit="envoie()". On rajoute method="post" pour éviter que les données du formulaires ne s'affichent dans l'URL lors du submit -->
+    <form class="login-form" method="post" action="" name="formulaire" onsubmit="envoi()">
+
+    <h3 > Connectez vous, sinon "Créez un compte" ! </h3>
+      <input type="text" placeholder="username" id ="username" name="username" required />
+      <input type="password" placeholder="password" id="password" name="password" required />
+
+      <input type="submit" id="submit" value = "connexion"/>
+      
+      <p class="message"> Pas encore enregistré(e) ? <a href="projet/enregister.html"> Créez un compte</a></p>
+    </form>
+
+  </div>
+</div>
+
+
+</body>
+
+</html>
