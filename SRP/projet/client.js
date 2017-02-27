@@ -39,10 +39,21 @@
                     // The condition is true when the response is ready
                     if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) 
                     {
-                      salt = xhr.responseText;
-                      client.setSalt(salt);
-                      console.log("salt client = " + client.getSalt() );
-                      resolve ("Le username est envoyé au serveur et le salt est bien récupéré.")
+                      // If the username is stored in the database, the response text is the salt.
+                      if ( xhr.responseText != "false" )
+                      {
+                        salt = xhr.responseText;
+                        client.setSalt(salt);
+                        console.log("salt client = " + client.getSalt() );
+                        resolve ("Le username est envoyé au serveur et le salt est bien récupéré.")
+                      }
+                      // The username does not exist in the database.
+                      else 
+                      {
+                        alert("Votre username n'existe pas. Veuillez vous inscrire.");
+                        reject("Votre username n'existe pas. Veuillez vous inscrire.");
+                      }
+
                     } 
                   }
                   // We connect with the server with the POST method to the url mentioned above. true = We use asynchronous communication 
@@ -124,12 +135,12 @@
                         b = client.checkServerProof(M2);
                         console.log ("b  client  = "  + b)
                         if (b == true)
-                          alert("Welcome to the right server. You are finally connected.");
+                          alert("Bienvenue, vous êtes connecté.");
                         else 
-                          alert("You are not allowed to connect. Your proof is false.");
+                          alert("Vous n'avez pas le droit de vous connecter. Votre preuve est fausse.");
                       }
                       else 
-                        alert("You are not allowed to connect. Your proof is false.");
+                        alert("Vous n'avez pas le droit de vous connecter. Votre preuve est fausse.");
                     }
                     }
                     xhr.send("M1=" + M1);

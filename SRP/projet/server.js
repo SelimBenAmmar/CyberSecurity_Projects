@@ -35,37 +35,35 @@ app.post('/api/login', function(req, res) {
         else 
         {
             // We test if the entered username exists in the database or not
-            db.collection('users', function(err, collection) {
+            db.collection("users").findOne({username : username }, function(error, result) {
                 if (err) 
                     throw err;
                 else 
                 {
-                    var b = collection.find( {username : username }, {"_id" : 1}); 
-                    if ( b != null )
+                    // If result= null then this element does not exist.  
+                
+                    if ( result != null )
                     {
                         // The username exists, hence we can extract the verifier and the salt from the collection users 
-                        collection.find( { username: username }, { Cverif: 1, _id: 0 } ).toArray(function(err, docs) {
-                            // Get the verifier from the database and transform it to a string
-                            var Cverif = JSON.stringify(docs[0]).substring(11);
-                            Cverif = Cverif.substring(0, Cverif.length -2 ) ; 
-                            collection.find( { username: username }, { Csalt: 1, _id: 0 } ).toArray(function(err, docs) {        
-                                // Get the salt from the database and transform it to a string
-                                var Csalt = JSON.stringify(docs[0]).substring(10);
-                                Csalt = Csalt.substring(0, Csalt.length -2 ) ; 
-                                // To initialise the server
-                                server.init({ salt: Csalt, verifier: Cverif }, function(){
-                                    sPubKey = server.getPublicKey();
-                                    console.log('username = ' + username);
-                                    console.log('salt = ' + server.getSalt() );
-                                    res.send(server.getSalt());
-                                });
-                                db.close();
-                            });
-                            
+                        // Get the verifier from the database and transform it to a string
+                        var Cverif = result.Cverif.toString();   
+                        // Get the salt from the database and transform it to a string
+                        var Csalt = result.Csalt.toString();
+
+                        // To initialise the server
+                        server.init({ salt: Csalt, verifier: Cverif }, function(){
+                            sPubKey = server.getPublicKey();
+                            console.log('username = ' + username);
+                            console.log('salt = ' + server.getSalt() );
+                            res.send(server.getSalt());
                         });
+                        db.close();
                     }
                     else 
-                        console.log("\n \n You are not allowed to connect. Your username does not exist. \n \n");
+                    {
+                        console.log("\n \n Votre username n'existe pas. Veuillez vous inscrire.  \n \n");
+                    	res.send("false");
+                    }
                 }
             });
         }
@@ -108,7 +106,7 @@ app.post('/api/login3', function(req, res) {
     console.log(b);
     if (b) 
     {
-        console.log ("Welcome you have the right to connect ");
+        console.log (" Bienvenue, vous avez le droit de vous connecter.");
         // Construct the response to send back to the client with the server's proof
         M2 = server.getProof();
         console.log("M2 =  " + M2);
@@ -116,7 +114,7 @@ app.post('/api/login3', function(req, res) {
     }
     else 
     {
-        console.log("You are not allowed to connect. Your proof is false.");
+        console.log("Vous n'avez pas le droit de vous connecter. Votre preuve est fausse.");
         M2 = "false" ;
         res.send(M2);
     }
@@ -144,26 +142,35 @@ app.post('/api/enregistrer', function(req, res) {
         else 
         {
             // We test if the entered username exists in the database or not
-            db.collection('users', function(err, collection) {
+            db.collection("users").findOne({username : user }, function(error, result) {
                 if (err) 
                     throw err;
                 else 
                 {
-                    // Create a document to insert in the database MongoDB
-                    var doc = { username : user, Cverif : verif, Csalt : salt }; 
-                    collection.insert(doc, {w: 1}, function(err, records)
+                    // If result = null then this element does not exist.  
+                    if ( result == null )
                     {
-                        if (err)
-                            throw err ;
-                        else 
-                        {   
-                            console.log("L'inscription a bien eu lieu.");
-                            console.log(doc);
-                            res.send("votre inscription a bien eu lieu avec le username : " + user );
-                        }
-                    }); 
-                    db.close();  
-                } 
+                    	// Create a document to insert in the database MongoDB
+                    	var doc = { username : user, Cverif : verif, Csalt : salt }; 
+                    	db.collection("users").insert(doc, {w: 1}, function(err, records)
+                    	{
+                        	if (err)
+                            	throw err ;
+                        	else 
+                        	{   
+                            	console.log("L'inscription a bien eu lieu.");
+                            	console.log(doc);
+                            	res.send("votre inscription a bien eu lieu avec le username : " + user );
+                        	}
+                    	}); 
+                    	db.close();  
+                	} 
+                	else
+                	{
+                		console.log("Votre inscription n'a pas pu avoir lieu. Ce username est déjà utilisé.");
+                        res.send("votre inscription n'a pas pu avoir lieu. Le username " + user + " est déjà utilisé." );
+                	}
+                }
             });
         }
     });

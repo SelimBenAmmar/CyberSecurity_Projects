@@ -16,26 +16,24 @@ Server side  =
 - Express
 - Mongo DB : a non relational database
 
-The database contains only a username and an associated password. However, everyone can create an account and then connect with his credentials. 
-user = 'selim'
-pass = 'alex'
-
+Everyone can create an account and then connect with his credentials. 
 The password isn't stored in neither client side nor server side. However, a verifier is stored in the server.js file.
 
 
 How to use it : 
 
-1- Download the folder SRP.
+1- Create an empty subdirectory in the directory /data : sudo mkdir dbSRP.
+This folder will contain the database of the application.
 
-2- Open index.html with “Google Chrome”. It does not work with Firefox and it is not tested with other browsers. Choose Google Chrome. Open “Developer tools” to follow all the steps during the connexion.
+2- Download Mongo DB and install it. This will manage our non relational database. 
+- In a 1st  terminal, go to the folder mongodb you have just installed. Then open the folder bin and execute mongod : $ sudo ./mongod  -- dbpath /data/dbSRP
+                       The option -- dbpath redirects mongod toward the location of our database
+- If you want to use Mongo DB shell to follow the content of the database write in a 2nd terminal but in the same directory : $ ./mongo
 
-3- Open database “Mongo DB” :
-- In a 1st  terminal, go to the folder SRP. Then write : $ cd mongodb/bin
-- Then execute mongod : $ sudo ./mongod  -- dbpath ../../dbSRP
-   The option -- dbpath redirects mongod toward our database
--  If you want to use Mongo DB shell to follow the content of the database write in a 2nd terminal but in the same directory : $ ./mongo
+3- Download the folder SRP. Open "index.html" with “Google Chrome”. It does not work with "Firefox" and it is not tested with other browsers. Open “Developer tools” in the menu of "Google Chrome" to follow all the steps during the connexion.
 
-4- In a 3rd terminal. Open projet and launch the node server : $ node server.js
+
+4- In a 3rd terminal. Open the folder "projet" located inside "SRP" and launch the node server : $ node server.js
 
 => The server and the database are normally working in two different ports. 8080 for the Node server and 27017 for the Mongo DB database.
 
