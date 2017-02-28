@@ -4,7 +4,7 @@
 
 The aim of this project is to develop a form where a client can register and connect with a username and a password to a server. The authentication is based on the SRP protocol. 
 Everyone can create an account and then connect with his credentials. 
-The password isn't stored in neither client side nor server side. However, a verifier is stored in the server.js file.
+The password isn't stored in neither client side nor server side. However, a verifier is stored in the mongoDB database. 
 
 2- Hacking WIFI :
 
